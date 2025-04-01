@@ -1,0 +1,121 @@
+class Sistema():
+    def __init__(self):
+        self.__listpac={}
+    def revExist(self,cedula):
+        return cedula in self.listpac
+    def addPac(self,cedula,Pac):
+        self.__listpac[cedula]=Pac
+    def delPac(self,cedula):
+        del self.__listpac[cedula]
+    def VerPac(self,cedula):
+        return self.__listpac.get(cedula)
+    def ChTXT(Pac):
+        pass
+class Paciente():
+    def __init__(self):
+        self.__nombre=str
+        self.__cedula=0
+        self.__genero=str
+        self.__visitas={}
+    def verNombre(self):
+         return self.__nombre
+    def verCedula(self):
+        return self.__cedula
+    def verGenero(self):
+        return self.__genero
+    def verVisitas(self,cod):
+        return self.__visitas[cod]
+    
+    def revVisita(self,Visita):
+        for i in self.__visitas.keys():
+            if Visita==i:
+                return False
+        return True
+    
+    def AddNombre(self,n):
+        self.__nombre=n
+    def AddCedula(self,n):
+        self.__cedula=n
+    def AddGenero(self,n):
+        self.__genero=n
+    def AddVisita(self,Visita):
+        self.__visitas[len(self.__visitas)+1]=Visita
+from datetime import datetime as dt
+class Visita():
+    def __init__(self):
+        self.__DtVisita=dt
+        self.__Regis=str
+        self.__notas=str
+        self.__indice=Indice()
+    def VerDtVisita(self)
+        return self.__DtVisita
+    def VerRegis(self):
+        return self.__Regis
+    def VerNotas(self):
+        return self.__notas
+    def VerIndice(self):
+        return self.__indice
+    
+    def AddDtVisita(self,h):
+        self.__DtVisita=h
+    def AddRegis(self,h):
+        self.__Regis=h
+    def AddNotas(self,h):
+        self.__notas=h
+    def AddIndice(self,h):
+        self.__indice=h
+class Indice():
+    def __init__(self):
+        self.__delta=float
+        self.__theta=float
+        self.__alfa1=float
+        self.__alfa2=float
+        self.__beta=float
+        self.__gamma=float
+    def VerDelta(self):
+        return self.__delta
+    def VerTheta(self):
+        return self.__theta
+    def VerAlfa1(self):
+        return self.__alfa1
+    def VerAlfa2(self):
+        return self.__alfa2
+    def VerBeta(self):
+        return self.__beta
+    def VerGamma(self):
+        return self.__gamma
+def rev_num(msj):
+    while True:
+        try:
+            x=int(input(msj))
+            return x
+        except:
+            print("Ingrese un numero entero.")
+def rev_float(msj):
+    while True:
+        try:
+            x=float(input(msj))
+            return x
+        except:
+            print("Ingrese un numero flotante.")
+def rev_dt(msj):
+    fecha1=input(msj)
+    while True:
+        try:
+            dt = dt.strptime(fecha1, '%d/%m/%Y')
+            return dt
+        except ValueError:
+            print("Incorrect data format, should be DD/MM/YYYY")
+            fecha1 = input("Ingrese una fecha valida (DD/MM/YYYY): ")
+def main():
+    Sistema=Sistema()
+    print("1.Ingresar paciente\n 2.Editar paciente\n 3.Eliminar un paciente\n 4.Cargar y guardar paciente\n 5.Ver cantidad de visitas de pacientes\n 6-Salir del sistema")
+    menu=rev_num("Ingrese una opcion")
+    if menu==1:
+        ced=rev_num("Ingrese la cedula del paciente:")
+        if Sistema.revExist(ced):
+            print("Ya exsiste un paciente ingresado con esta cedula")
+        else:
+            name=input("Ingrese el nombre del paciente: ")
+            while True:
+                print("1.Femenino\n2.Masculino")
