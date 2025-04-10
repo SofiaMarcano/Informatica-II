@@ -1,114 +1,126 @@
 import random
 from datetime import datetime
 class Historia:
-    def __init__(self, id, fecha, des, vet):
-        self._id_historia = id
-        self._fecha = fecha
-        self._descripcion = des
-        self._veterinario = vet
+    def __init__(self, id_historia, fecha, des, vet):
+        self.__id_historia = id_historia
+        self.__fecha = fecha
+        self.__descripcion = des
+        self.__veterinario = vet
 
     def get_id_historia(self):
-        return self._id_historia
+        return self.__id_historia
 
     def __str__(self):
-        return f"[{self._id_historia}] Fecha: {self._fecha} | Veterinario: {self._veterinario}\n   ➤ {self._descripcion}"
+        return f"[{self.__id_historia}] Fecha: {self.__fecha} | Veterinario: {self.__veterinario}\n   --{self.__descripcion}"
+
 class Mascota:
     def __init__(self, id_mascota, nombre, tipo, raza, edad, propietario, telefono):
-        self._id_mascota = id_mascota
-        self._nombre = nombre
-        self._tipo = tipo
-        self._raza = raza
-        self._edad = edad
-        self._propietario = propietario
-        self._telefono = telefono
-        self._historias = []
+        self.__id_mascota = id_mascota
+        self.__nombre = nombre
+        self.__tipo = tipo
+        self.__raza = raza
+        self.__edad = edad
+        self.__propietario = propietario
+        self.__telefono = telefono
+        self.__historias = []
+
     def add_historia(self, historia):
-        self._historias.append(historia)
-
+        self.__historias.append(historia)
+    
     def del_historia(self, id_historia):
-        self._historias = [h for h in self._historias if h.get_id_historia() != id_historia]
-
+        self.__historias = [h for h in self.__historias if h.get_id_historia() != id_historia]
+    
     def get_id_mascota(self):
-        return self._id_mascota
-
+        return self.__id_mascota
+    
     def get_nombre(self):
-        return self._nombre
-
+        return self.__nombre
+    
     def get_historias(self):
-        return self._historias
-
+        return self.__historias
+    
+    def historia_existe(self, id_historia):
+        return any(h.get_id_historia() == id_historia for h in self.__historias)
+    
     def __str__(self):
-        return f"{self._id_mascota} - {self._nombre} ({self._tipo}, {self._raza}), {self._edad} meses\nPropietario: {self._propietario} | Tel: {self._telefono}"
+        return f"{self.__id_mascota} - {self.__nombre} ({self.__tipo}, {self.__raza}), {self.__edad} meses\nPropietario: {self.__propietario} | Tel: {self.__telefono}"
 
 class Veterinaria:
     def __init__(self):
-        self._mascotas = {}
+        self.__mascotas = {}
 
-    def generar_id(self, prefijo):
+    def gen_id(self, prefijo, entidad):
         while True:
             numero = random.randint(10000, 99999)
             nuevo_id = f"{prefijo}{numero}"
-            if prefijo == "M" and nuevo_id not in self._mascotas:
+            if prefijo == "M" and nuevo_id not in self.__mascotas:
                 return nuevo_id
-            elif prefijo == "H":
+            elif prefijo == "H" and not entidad.historia_existe(nuevo_id):
                 return nuevo_id 
 
     def add_mascota(self, nombre, tipo, raza, edad, propietario, telefono):
-        id_mascota = self.generar_id("M")
+        id_mascota = self.gen_id("M", None)
         mascota = Mascota(id_mascota, nombre, tipo, raza, edad, propietario, telefono)
-        self._mascotas[id_mascota] = mascota
-        print(f"Mascota ingresada con ID: {id_mascota}")
+        self.__mascotas[id_mascota] = mascota
+        print(f"Ha sido ingresada la mascota con ID: {id_mascota}")
 
     def del_mascota(self, id_mascota):
-        if id_mascota in self._mascotas:
-            del self._mascotas[id_mascota]
-            print(f"Mascota {id_mascota} y todas sus historias fueron eliminadas.")
+        if id_mascota in self.__mascotas:
+            del self.__mascotas[id_mascota]
+            print(f"La mascota con el ID {id_mascota} y todas sus historias fueron eliminadas.")
         else:
             print("Mascota no encontrada.")
 
     def add_historia(self, id_mascota, fecha, descripcion, veterinario):
-        if id_mascota in self._mascotas:
-            id_historia = self.generar_id("H")
-            historia = Historia(id_historia, fecha, descripcion, veterinario)
-            self._mascotas[id_mascota].agregar_historia(historia)
-            print(f"Historia registrada con ID: {id_historia}")
-        else:
-            print(" Mascota no encontrada.")
-
+        if id_mascota not in self.__mascotas:
+            print("Error: No existe una mascota con ese ID.")
+            return
+        
+        id_historia = self.gen_id("H", self.__mascotas[id_mascota])
+        historia = Historia(id_historia, fecha, descripcion, veterinario)
+        self.__mascotas[id_mascota].add_historia(historia)
+        print(f"Historia registrada con ID: {id_historia}")
     def del_historia(self, id_mascota, id_historia):
-        if id_mascota in self._mascotas:
-            self._mascotas[id_mascota].eliminar_historia(id_historia)
-            print(f"Historia {id_historia} eliminada.")
+        if id_mascota in self.__mascotas:
+            mascota = self.__mascotas[id_mascota]
+            if mascota.historia_existe(id_historia):
+                mascota.del_historia(id_historia)
+                print(f"Historia {id_historia} eliminada.")
+            else:
+                print(f"Error: No se encontró una historia con ID {id_historia} para esta mascota.")
         else:
-            print("Mascota no encontrada.")
+            print("Error: Mascota no encontrada.")
+
 
     def see_historias(self, id_mascota):
-        if id_mascota in self._mascotas:
-            historias = self._mascotas[id_mascota].get_historias()
+        if id_mascota in self.__mascotas:
+            historias = self.__mascotas[id_mascota].get_historias()
             if historias:
-                print(f"\n Historias médicas de {id_mascota}:")
+                print(f"\nHistorias médicas de {id_mascota}:")
                 for historia in historias:
                     print(historia)
             else:
-                print("⚠️ Esta mascota no tiene historias médicas registradas.")
+                print("Esta mascota no tiene historias médicas registradas.")
         else:
             print("Mascota no encontrada.")
 
     def list_mascotas(self):
-        print("\n🐾 Lista de mascotas registradas:")
-        if not self._mascotas:
-            print("📭 No hay mascotas registradas.")
+        print("\nLista de mascotas registradas:")
+        if not self.__mascotas:
+            print("No hay mascotas registradas.")
         else:
-            for mascota in self._mascotas.values():
+            for mascota in self.__mascotas.values():
                 print(mascota)
 
     def see_mascota(self, id_mascota):
-        if id_mascota in self._mascotas:
-            print("\n Información de la mascota:")
-            print(self._mascotas[id_mascota])
-            print(f"Cantidad de historias: {len(self._mascotas[id_mascota].get_historias())}")
-        else:
-            print("Mascota no encontrada.")
+        if id_mascota in self.__mascotas:
+            print("\nInformación de la mascota:")
+            print(self.__mascotas[id_mascota])
+            print(f"Cantidad de historias: {len(self.__mascotas[id_mascota].get_historias())}")
+            if self.__mascotas[id_mascota].get_historias():
+                print("Historias médicas registradas:")
+                for historia in self.__mascotas[id_mascota].get_historias():
+                    print(historia)
 def rev_num(msj):
     while True:
         try:
@@ -129,7 +141,7 @@ def main():
     vet = Veterinaria()
 
     while True:
-        print("\n✨ MENÚ SISTEMA VETERINARIA")
+        print("\nMENÚ SISTEMA VETERINARIA")
         print("1. Ingresar mascota")
         print("2. Eliminar mascota")
         print("3. Ingresar historia médica")
@@ -152,7 +164,7 @@ def main():
                     tipo = "Gato"
                     break
                 elif opc == 3:
-                    tipo = ("Ingrese manualmente el tipo: ")
+                    tipo = input("Ingrese manualmente el tipo: ")
                     if tipo !="":
                         break
                     print("El tipo no puede estar vacio.")
